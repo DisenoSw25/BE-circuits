@@ -6,7 +6,9 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import edu.uclm.esi.circuits.dao.CircuitDAO;
 import edu.uclm.esi.circuits.model.Circuit;
@@ -30,7 +32,8 @@ public class CircuitService {
     public Map<String, Object> generateCode(Circuit circuit, String token) throws Exception {
         if(circuit.getQubits() > maxQubits) {
             if (token == null)
-                throw new Exception("El servicio solicitado requiere pago");
+                throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED, 
+                "El servicio solicitado requiere pago");
             ProxyBEUsuarios.get().checkCredit(token);
         }
 
@@ -38,12 +41,18 @@ public class CircuitService {
 
         String code =  circuit.generateCode(templateCode);
         circuit.setGeneratedCode(code);
-        if (circuit.getName() != null) 
-            this.circuitDAO.save(circuit);
+        if (circuit.getName() == null) 
+            circuit.setName("Circuit" + circuit.getId());
+        this.circuitDAO.save(circuit);
         
         Map<String,Object> result = new HashMap<>();
         result.put("code", code);
         return result;
+    }
+
+    public Circuit getCircuitById(String id) {
+        return circuitDAO.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Circuito no encontrado"));
     }
 
     private String readFile(String fileName) throws Exception{

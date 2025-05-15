@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,5 +50,14 @@ public class CircuitController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED, e.getMessage());
         }
+    }
+
+    @GetMapping("/retrieveCircuit/{id}")
+    public Circuit retrieveCircuit(@PathVariable String id) {
+        Circuit circuit = service.getCircuitById(id);
+        if (circuit == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Circuito no encontrado");
+        }
+        return circuit;
     }
 }
