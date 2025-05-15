@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import edu.uclm.esi.circuits.dao.CircuitDAO;
@@ -15,21 +16,28 @@ public class CircuitService {
 
     @Autowired
     private CircuitDAO circuitDAO;
+
+    @Value("${circuits.template.path}")
+    private String templatePath;
+
+    @Value("${circuits.max-qubits}")
+    private int maxQubits;
     
     public String createCircuit(Map<String, Object> body) {
         return "Hola";
     }
 
     public Map<String, Object> generateCode(Circuit circuit, String token) throws Exception {
-        if(circuit.getQubits() > 6) {
+        if(circuit.getQubits() > maxQubits) {
             if (token == null)
                 throw new Exception("El servicio solicitado requiere pago");
             ProxyBEUsuarios.get().checkCredit(token);
         }
 
-        String templateCode = this.readFile("templates/ibm.local.txt");
+        String templateCode = this.readFile(templatePath);
 
         String code =  circuit.generateCode(templateCode);
+        circuit.setGeneratedCode(code);
         if (circuit.getName() != null) 
             this.circuitDAO.save(circuit);
         

@@ -4,17 +4,23 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.springframework.beans.factory.annotation.Value;
 
 public class ProxyBEUsuarios {
     private static ProxyBEUsuarios yo;
-    private String urlUsuarios = "http://localhost:8081/tokens/";
+
+    @Value("${circuits.usuarios.url}")
+    private String urlUsuarios;
+
+    @Value("${circuits.usuarios.checkToken}")
+    private String checkTokenExtensionURL;
 
     // Constructor privado
     private ProxyBEUsuarios() {
     }
 
     public void checkCredit(String token) throws Exception{
-        HttpGet httpGet = new HttpGet(this.urlUsuarios + "checkToken?token=" + token);
+        HttpGet httpGet = new HttpGet(this.urlUsuarios + checkTokenExtensionURL + token);
         try(CloseableHttpClient httpClient = HttpClients.createDefault()){
             try(CloseableHttpResponse response = httpClient.execute(httpGet)) {
             int code = response.getCode();

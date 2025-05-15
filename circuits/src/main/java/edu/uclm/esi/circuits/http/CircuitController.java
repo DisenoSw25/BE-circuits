@@ -3,6 +3,7 @@ package edu.uclm.esi.circuits.http;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,9 @@ public class CircuitController {
     @Autowired
     private CircuitService service;
 
+    @Value("${circuits.tokenGenerateCode}")
+    private String tokenGenerateCode;
+
     @PostMapping("/createCircuit") // No tiene por qué tener el mismo nombre que el método
     public String createCircuit(@RequestBody Map<String, Object> body) {
         if (!body.containsKey("table") || !body.containsKey("outputQubits")){
@@ -38,7 +42,7 @@ public class CircuitController {
     public Map<String, Object> generateCode(HttpServletRequest request, @RequestParam (required = false) String name, @RequestBody Circuit circuit) {
         if (name != null)
             circuit.setName(name);
-        String token = request.getHeader("token_generacion");
+        String token = request.getHeader(tokenGenerateCode);
         try {
             return this.service.generateCode(circuit, token);
         } catch (Exception e) {

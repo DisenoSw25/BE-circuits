@@ -13,10 +13,13 @@ public class Circuit {
     @Id @Column(length = 36)
     private String id;
     private int outputQbits;
-    @Transient
-    private int[][] table;
     @Column(length = 50)
     private String name;
+    @Column(columnDefinition = "TEXT")
+    private String generatedCode;
+
+    @Transient
+    private int[][] table;
     
     public Circuit() {
         this.id = UUID.randomUUID().toString();
@@ -79,6 +82,10 @@ public class Circuit {
         return code;
     }
 
+    public int getQubits() {
+        return this.table[0].length;
+    }
+
     public String getId() {
         return id;
     }
@@ -87,33 +94,37 @@ public class Circuit {
         this.id = id;
     }
 
+    public int getOutputQubits() {
+        return this.outputQbits;
+    }
+
     public void setOutputQubits(int outputQubits) {
         this.outputQbits = outputQubits;
         // System.out.println("Setting outputQubits to " + outputQubits);
     }
 
-    public void setTable(int[][] table) {
-        this.table = table;
-        // System.out.println("Setting table to " + Arrays.toString(table));
+    public String getName() {
+        return this.name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int getOutputQubits() {
-        return this.outputQbits;
+    public String getGeneratedCode() {
+        return generatedCode;
+    }
+
+    public void setGeneratedCode(String generatedCode) {
+        this.generatedCode = generatedCode;
     }
 
     public int[][] getTable() {
         return table;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public int getQubits() {
-        return this.table[0].length;
+    public void setTable(int[][] table) {
+        this.table = table;
+        // System.out.println("Setting table to " + Arrays.toString(table));
     }
 }
