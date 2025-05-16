@@ -41,8 +41,8 @@ public class CircuitService {
 
         String code =  circuit.generateCode(templateCode);
         circuit.setGeneratedCode(code);
-        if (circuit.getName() == null) 
-            circuit.setName("Circuit" + circuit.getId());
+        // if (circuit.getName() == null) 
+        //     circuit.setName("Circuit" + circuit.getId());
         this.circuitDAO.save(circuit);
         
         Map<String,Object> result = new HashMap<>();
