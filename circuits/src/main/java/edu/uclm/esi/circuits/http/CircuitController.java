@@ -1,5 +1,6 @@
 package edu.uclm.esi.circuits.http;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +31,13 @@ public class CircuitController {
     @Value("${circuits.tokenGenerateCode}")
     private String tokenGenerateCode;
 
-    @PostMapping("/createCircuit") // No tiene por qué tener el mismo nombre que el método
-    public String createCircuit(@RequestBody Map<String, Object> body) {
-        if (!body.containsKey("table") || !body.containsKey("outputQubits")){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, 
-            "The request body must contain the qubits and outputQubits fields");
-        }
-       return this.service.createCircuit(body);
-    }
-
     // http..../.../generateCode?name=prueba
     @PostMapping("/generateCode") // Tiene que tener un postmapping único
     public Map<String, Object> generateCode(HttpServletRequest request, @RequestParam (required = false) String name, @RequestBody Circuit circuit) {
         if (name != null)
             circuit.setName(name);
+        else
+            circuit.setName("Circuit" + circuit.getId());
         String token = request.getHeader(tokenGenerateCode);
         try {
             return this.service.generateCode(circuit, token);
@@ -59,5 +53,10 @@ public class CircuitController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Circuito no encontrado");
         }
         return circuit;
+    }
+
+    @GetMapping("/getCircuitList")
+    public List<Map<String, String>> getCircuitList() {
+        return service.getCircuitList();
     }
 }
