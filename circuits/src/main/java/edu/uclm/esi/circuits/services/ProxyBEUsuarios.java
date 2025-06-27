@@ -12,15 +12,15 @@ public class ProxyBEUsuarios {
     @Value("${circuits.usuarios.url}")
     private String urlUsuarios;
 
-    @Value("${circuits.usuarios.checkToken}")
-    private String checkTokenExtensionURL;
+    @Value("${circuits.usuarios.checkCredito}")
+    private String checkCredito;
 
     // Constructor privado
     private ProxyBEUsuarios() {
     }
 
     public void checkCredit(String token) throws Exception{
-        HttpGet httpGet = new HttpGet(this.urlUsuarios + checkTokenExtensionURL + token);
+        HttpGet httpGet = new HttpGet(this.urlUsuarios + checkCredito);
         try(CloseableHttpClient httpClient = HttpClients.createDefault()){
             try(CloseableHttpResponse response = httpClient.execute(httpGet)) {
             int code = response.getCode();

@@ -37,7 +37,7 @@ public class CircuitController {
         if (name != null)
             circuit.setName(name);
         else
-            circuit.setName("Circuit" + circuit.getId());
+            circuit.setName("Circuit " + circuit.getId());
         String token = request.getHeader(tokenGenerateCode);
         try {
             return this.service.generateCode(circuit, token);
@@ -52,6 +52,7 @@ public class CircuitController {
         if (circuit == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Circuito no encontrado");
         }
+        circuit.setTable(new int[1][1]);
         return circuit;
     }
 
