@@ -39,7 +39,7 @@ public class CircuitService {
 
         String code =  circuit.generateCode(templateCode);
         circuit.setGeneratedCode(code);
-        if(circuit.getQubits() > maxQubits)
+        //if(circuit.getQubits() > maxQubits)
             this.circuitDAO.save(circuit); // Poner comprobación de qubits para almacenar
         
         Map<String,Object> result = new HashMap<>();
