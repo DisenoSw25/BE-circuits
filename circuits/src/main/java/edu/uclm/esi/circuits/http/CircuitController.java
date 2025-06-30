@@ -1,33 +1,63 @@
 package edu.uclm.esi.circuits.http;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import edu.uclm.esi.circuits.model.Circuit;
 import edu.uclm.esi.circuits.services.CircuitService;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("circuits")
+@CrossOrigin("*")
 public class CircuitController {
 
     @Autowired
     private CircuitService service;
 
-    @GetMapping("/createCircuit")
-    public Map<String, Object> createCircuit(@RequestParam int qubits) {
-        if (qubits < 1) 
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "The number of qubits must be greater than 0");
+    @Value("${circuits.tokenGenerateCode}")
+    private String tokenGenerateCode;
 
-       return this.service.createCircuit(qubits);
+    // http..../.../generateCode?name=prueba
+    @PostMapping("/generateCode") // Tiene que tener un postmapping único
+    public Map<String, Object> generateCode(HttpServletRequest request, @RequestParam (required = false) String name, @RequestBody Circuit circuit) {
+        if (name != null)
+            circuit.setName(name);
+        else
+            circuit.setName("Circuit " + circuit.getId());
+        String token = request.getHeader(tokenGenerateCode);
+        try {
+            return this.service.generateCode(circuit, token);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED, e.getMessage());
+        }
+    }
+
+    @GetMapping("/retrieveCircuit/{id}")
+    public Circuit retrieveCircuit(@PathVariable String id) {
+        Circuit circuit = service.getCircuitById(id);
+        if (circuit == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Circuito no encontrado");
+        }
+        circuit.setTable(new int[1][1]);
+        return circuit;
+    }
+
+    @GetMapping("/getCircuitList")
+    public List<Map<String, String>> getCircuitList() {
+        return service.getCircuitList();
     }
 }

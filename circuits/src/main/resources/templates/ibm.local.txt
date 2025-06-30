@@ -1,0 +1,16 @@
+from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+qubits = #QUBITS#
+shots = 1024
+	
+qreg = QuantumRegister(qubits, 'q') 
+creg = ClassicalRegister(qubits, 'c')
+circuit = QuantumCircuit(qreg, creg)
+	  
+ONE = [0, 1]
+ZERO = [1, 0]
+#EXPECTED#
+#INITIALIZE#
+#HADAMARDS#
+#CALCULUS#
+for i in range(0, qubits) :
+	circuit.measure(i, qubits-i-1)
